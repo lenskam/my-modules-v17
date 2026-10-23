@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# Artefacts Windows
+*Zone.Identifier
+
+# Sauvegardes et archives
+*.zip
+*.bak*
+
+# Odoo
+*.log
