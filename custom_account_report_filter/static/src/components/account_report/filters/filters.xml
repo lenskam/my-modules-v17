@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <t t-name="custom_account_report_filter.SapReportFilters" t-inherit="account_reports.AccountReportFiltersCustomizable">
+        <xpath expr="//t[@t-if=&quot;'partner' in controller.options&quot;]" position="after">
+            <!-- Masquer les tiers sans mouvement -->
+            <t t-if="'hide_partners_without_moves' in controller.options">
+                <div id="filter_hide_partners_without_moves" class="filter_hide_partners_without_moves">
+                    <t t-call="custom_account_report_filter.AccountReportFilterHidePartnersWithoutMoves"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+</templates>

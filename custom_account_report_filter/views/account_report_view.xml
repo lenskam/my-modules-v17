@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Option visible sur la fiche du rapport (modèle account.report), dans le
+        groupe "Filters" à côté de filter_partner. La ref correspond à la vue
+        formulaire standard du moteur de reporting d'Odoo 17 (account_reports).
+        La valeur est transmise au serveur via le dict options sous le nom du
+        champ, suite à l'activation du filtre dans la barre d'options du rapport.
+    -->
+    <record id="view_account_report_form_inherit_saptis" model="ir.ui.view">
+        <field name="name">account.report.form.inherit.saptis</field>
+        <field name="model">account.report</field>
+        <field name="inherit_id" ref="account_reports.account_report_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='filter_partner']" position="after">
+                <field name="filter_hide_partners_without_moves"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

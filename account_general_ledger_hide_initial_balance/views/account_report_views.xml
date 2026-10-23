@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Option visible sur la fiche du rapport (modele account.report), dans le
+        groupe "Filters". La ref correspond a la vue formulaire standard du
+        moteur de reporting d'Odoo 17 (account_reports).
+        La valeur sert d'etat par defaut de l'option dans la barre d'options
+        du rapport Grand livre.
+    -->
+    <record id="view_account_report_form_inherit_gl_hide_initial_balance" model="ir.ui.view">
+        <field name="name">account.report.form.inherit.gl_hide_initial_balance</field>
+        <field name="model">account.report</field>
+        <field name="inherit_id" ref="account_reports.account_report_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='filter_hide_0_lines']" position="after">
+                <field name="filter_hide_initial_balance"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

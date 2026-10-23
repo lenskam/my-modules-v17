@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <t t-name="account_general_ledger_hide_initial_balance.AccountReportFilterHideInitialBalance">
+        <button
+            class="btn btn-secondary"
+            t-att-class="controller.options.hide_initial_balance ? 'btn btn-secondary active' : 'btn btn-secondary'"
+            t-on-click="() => this.toggleFilter('hide_initial_balance')"
+            title="Masquer le solde initiale"
+        >
+            <i class="fa fa-eye-slash me-1"/>
+            Masquer le solde initiale
+        </button>
+    </t>
+</templates>

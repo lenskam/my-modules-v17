@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <t t-name="account_general_ledger_hide_initial_balance.GLHideInitialBalanceFilters">
+        <t t-call="{{ contentTemplate }}"/>
+        <!-- Masquer le solde initiale -->
+        <t t-if="'hide_initial_balance' in controller.options">
+            <div id="filter_hide_initial_balance" class="filter_hide_initial_balance">
+                <t t-call="account_general_ledger_hide_initial_balance.AccountReportFilterHideInitialBalance"/>
+            </div>
+        </t>
+    </t>
+</templates>

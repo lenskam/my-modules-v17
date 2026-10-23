@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <t t-name="custom_account_report_filter.AccountReportFilterHidePartnersWithoutMoves">
+        <button
+            class="btn btn-secondary"
+            t-att-class="controller.options.hide_partners_without_moves ? 'btn btn-secondary active' : 'btn btn-secondary'"
+            t-on-click="() => this.toggleFilter('hide_partners_without_moves')"
+            title="Masquer les tiers sans mouvement"
+        >
+            <i class="fa fa-user-slash me-1"/>
+            Masquer les tiers sans mouvement
+        </button>
+    </t>
+</templates>
