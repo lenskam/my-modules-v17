@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Rappel 1 : premier avis (par defaut J-10) -->
+        <record id="alert_template_reminder_1" model="subscription.alert.template">
+            <field name="name">Rappel 1 — Premier avis</field>
+            <field name="type">reminder</field>
+            <field name="trigger_days">10</field>
+            <field name="subject">[${db_name}] Rappel abonnement Odoo (J-${days_before})</field>
+            <field name="body">Bonjour ${client_name},
+
+Rappel : votre abonnement Odoo (${db_name}) sera suspendu le ${suspension_date} (dans ${days_before} jours) si le paiement de la facture ${invoice_ref} d'un montant de ${invoice_amount} ${invoice_currency} n'est pas enregistré d'ici là.
+
+Merci de régulariser votre situation pour éviter toute interruption de service.
+
+Service Abonnement</field>
+        </record>
+
+        <!-- Rappel 2 : relance (par defaut J-5) -->
+        <record id="alert_template_reminder_2" model="subscription.alert.template">
+            <field name="name">Rappel 2 — Relance</field>
+            <field name="type">reminder</field>
+            <field name="trigger_days">5</field>
+            <field name="subject">[${db_name}] Relance : abonnement Odoo (J-${days_before})</field>
+            <field name="body">Bonjour ${client_name},
+
+Sauf erreur de notre part, nous n'avons pas encore reçu le paiement de la facture ${invoice_ref} (${invoice_amount} ${invoice_currency}) pour l'abonnement Odoo ${db_name} (période ${cycle_name}).
+
+Votre service sera suspendu le ${suspension_date}. Merci de régulariser au plus vite.
+
+Service Abonnement</field>
+        </record>
+
+        <!-- Rappel 3 : dernier rappel (par defaut J-2 et J-1) -->
+        <record id="alert_template_reminder_3" model="subscription.alert.template">
+            <field name="name">Rappel 3 — Dernier rappel</field>
+            <field name="type">reminder</field>
+            <field name="trigger_days">2</field>
+            <field name="subject">[${db_name}] Dernier rappel : suspension de votre abonnement Odoo</field>
+            <field name="body">Bonjour ${client_name},
+
+Dernier rappel : à défaut de paiement de la facture ${invoice_ref} (${invoice_amount} ${invoice_currency}), l'abonnement Odoo ${db_name} sera suspendu aujourd'hui ou dans ${days_before} jour(s) (${suspension_date}).
+
+Contactez immédiatement l'administrateur pour éviter l'interruption.
+
+Service Abonnement</field>
+        </record>
+
+        <!-- Suspension -->
+        <record id="alert_template_suspension" model="subscription.alert.template">
+            <field name="name">Suspension du service</field>
+            <field name="type">suspension</field>
+            <field name="trigger_days">0</field>
+            <field name="subject">[${db_name}] Abonnement Odoo suspendu</field>
+            <field name="body">Bonjour ${client_name},
+
+Votre abonnement Odoo (${db_name}) a été suspendu le ${suspension_date} faute de paiement de la facture ${invoice_ref} (${invoice_amount} ${invoice_currency}) dans le délai imparti.
+
+L'accès au service est désormais bloqué. Veuillez contacter l'administrateur pour rétablir l'accès après régularisation.
+
+Service Abonnement</field>
+        </record>
+    </data>
+</odoo>

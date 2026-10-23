@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Modale d'alerte affichée sur la page de connexion lorsque
+         l'abonnement est suspendu (utilisateurs non-administrateurs) -->
+    <template id="web_login_suspension_modal" inherit_id="web.login" name="Login : modale suspension abonnement">
+        <xpath expr="//form[hasclass('oe_login_form')]" position="after">
+            <div t-if="subscription_suspended_modal" id="sc-suspension-overlay" class="sc-suspension-overlay">
+                <div class="sc-suspension-modal">
+                    <!-- Bouton de fermeture -->
+                    <button type="button" class="sc-suspension-close" aria-label="Fermer"
+                            onclick="document.getElementById('sc-suspension-overlay').style.display='none';">
+                        &#215;
+                    </button>
+                    <h4 class="sc-suspension-title">Abonnement suspendu</h4>
+                    <p class="sc-suspension-message" t-esc="error"/>
+                    <p class="sc-suspension-help">L'accès au service est bloqué faute de paiement.
+                        Veuillez contacter l'administrateur pour rétablir l'accès.</p>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Message personnalisé (en gras) au-dessus et/ou sous le formulaire
+         de connexion, configurable dans Paramètres → Abonnement -->
+    <template id="web_login_subscription_message" inherit_id="web.login_layout"
+              name="Login : message contrôle abonnement">
+        <xpath expr="//t[@t-out='0']" position="before">
+            <div t-if="sc_login_message_top" class="sc-login-message text-center mb-3">
+                <strong t-esc="sc_login_message_top"/>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-out='0']" position="after">
+            <div t-if="sc_login_message_bottom" class="sc-login-message text-center mt-3">
+                <strong t-esc="sc_login_message_bottom"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

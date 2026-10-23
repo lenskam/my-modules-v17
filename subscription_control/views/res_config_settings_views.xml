@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.subscription_control</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Abonnement" string="Abonnement" name="subscription_control" groups="base.group_system">
+                    <block title="Moteur de facturation local" name="subscription_engine">
+                        <setting id="subscription_engine_enabled_setting"
+                                 string="Moteur de facturation local"
+                                 help="Création des cycles, rappels et suspension locale par ce module. Désactivez si l'instance centrale (instance_control) gère la facturation ; les cycles restent affichés en lecture seule">
+                            <field name="subscription_billing_engine_enabled"/>
+                        </setting>
+                        <setting id="subscription_billing_day_setting"
+                                 string="Facturation mensuelle"
+                                 help="Jour du mois auquel le service est facturé (ex : 25)"
+                                 invisible="not subscription_billing_engine_enabled">
+                            <field name="subscription_billing_day"/>
+                        </setting>
+                        <setting id="subscription_payment_delay_setting"
+                                 string="Délai de paiement"
+                                 help="Nombre de jours après la facturation avant suspension du service (ex : 15)"
+                                 invisible="not subscription_billing_engine_enabled">
+                            <field name="subscription_payment_delay_days"/>
+                        </setting>
+                        <setting id="subscription_reminder_days_setting"
+                                 string="Intervalles de rappel"
+                                 help="Rappels envoyés N jours avant la date de suspension, séparés par des virgules (ex : 10,5,2,1)"
+                                 invisible="not subscription_billing_engine_enabled">
+                            <field name="subscription_reminder_days"/>
+                        </setting>
+                        <setting id="subscription_suspension_alert_setting"
+                                 string="Alerte de suspension"
+                                 help="Envoyer une alerte le jour de la suspension"
+                                 invisible="not subscription_billing_engine_enabled">
+                            <field name="subscription_suspension_alert"/>
+                        </setting>
+                    </block>
+                    <block title="Alertes et destinataires" name="subscription_alerts">
+                        <setting id="subscription_email_alerts_setting"
+                                 string="Alertes par email"
+                                 help="Envoi des emails de rappel et de suspension. Désactivez si les emails sont envoyés par l'instance centrale">
+                            <field name="subscription_email_alerts_enabled"/>
+                        </setting>
+                        <setting id="subscription_internal_alerts_setting"
+                                 string="Alertes natives Odoo"
+                                 help="Messages dans le chatter, Discuss et fenêtres modales. Désactivez si les alertes sont gérées par l'instance centrale">
+                            <field name="subscription_internal_alerts_enabled"/>
+                        </setting>
+                        <setting id="subscription_recipients_setting"
+                                 string="Destinataires"
+                                 help="Contacts qui reçoivent les rappels et alertes sur Odoo et par email">
+                            <field name="subscription_recipient_partner_ids" widget="many2many_tags"/>
+                        </setting>
+                        <setting id="subscription_emails_setting"
+                                 string="Emails supplémentaires"
+                                 help="Adresses email séparées par des virgules, en plus des contacts">
+                            <field name="subscription_recipient_emails"/>
+                        </setting>
+                        <setting id="subscription_templates_setting"
+                                 string="Modèles d'email par défaut (repli)"
+                                 help="Modèles utilisés pour les rappels et alertes par email ; un rappel J-N utilise en priorité le modèle par intervalle correspondant">
+                            <div class="row">
+                                <div class="col-6">
+                                    <field name="subscription_reminder_template_id"/>
+                                    <button name="action_open_reminder_template"
+                                            string="Ouvrir le modèle de rappel"
+                                            type="object"
+                                            class="btn btn-secondary mt-2"
+                                            icon="fa fa-external-link"/>
+                                </div>
+                                <div class="col-6">
+                                    <field name="subscription_suspension_template_id"/>
+                                    <button name="action_open_suspension_template"
+                                            string="Ouvrir le modèle de suspension"
+                                            type="object"
+                                            class="btn btn-secondary mt-2"
+                                            icon="fa fa-external-link"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting id="subscription_interval_templates_setting"
+                                 string="Modèles d'email par intervalle"
+                                 help="Pour un rappel J-N, le modèle dont l'intervalle est le plus proche inférieur ou égal à N est utilisé (ex. interval 2 : J-2 et J-1) ; sans intervalle configuré, le modèle de rappel par défaut est utilisé">
+                            <button name="%(subscription_control.action_subscription_mail_template_line)d"
+                                    string="Configurer les intervalles" type="action" class="oe_link" icon="fa-arrow-right"/>
+                        </setting>
+                        <setting id="subscription_alert_templates_setting"
+                                 string="Modèles d'alerte (texte)"
+                                 help="Sujets et corps des rappels et alertes, avec placeholders ${client_name}, ${db_name}, ${suspension_date}...">
+                            <button name="%(subscription_control.action_alert_template)d"
+                                    string="Ouvrir les modèles d'alerte" type="action" class="oe_link" icon="fa-arrow-right"/>
+                        </setting>
+                    </block>
+                    <block title="Blocage d'accès à l'expiration" name="subscription_enforcement">
+                        <setting id="subscription_enforcement_mode_setting"
+                                 string="Mode de blocage"
+                                 help="Mécanisme appliqué quand l'abonnement est expiré : « Expiration des sessions » déconnecte les utilisateurs actifs après le délai et bloque la connexion (défaut) ; « Révocation des groupes » retire les droits d'accès (comportement historique) ; « Aucun » délègue le blocage à l'instance centrale">
+                            <field name="subscription_enforcement_mode"/>
+                        </setting>
+                        <setting id="subscription_force_session_expiry_delay_setting"
+                                 string="Durée de vie d'une session (minutes)"
+                                 help="Délai après lequel les sessions actives sont supprimées une fois l'abonnement échu (mode « Expiration des sessions » uniquement)">
+                            <field name="subscription_force_session_expiry_delay"
+                                   invisible="subscription_enforcement_mode != 'session'"/>
+                        </setting>
+                    </block>
+                    <block title="Page de connexion" name="subscription_login_page">
+                        <setting id="subscription_login_message_top_setting"
+                                 string="Message au-dessus du formulaire"
+                                 help="Message en gras affiché au-dessus du formulaire de connexion (vide = masqué)">
+                            <field name="subscription_login_message_top"/>
+                        </setting>
+                        <setting id="subscription_login_message_bottom_setting"
+                                 string="Message sous le formulaire"
+                                 help="Message en gras affiché sous le formulaire de connexion (vide = masqué)">
+                            <field name="subscription_login_message_bottom"/>
+                        </setting>
+                    </block>
+                    <block title="Instance centrale et facturation externe" name="subscription_remote_sync">
+                        <setting id="subscription_remote_enabled_setting"
+                                 string="Synchronisation automatique des paiements"
+                                 help="Lit le statut des factures sur l'Odoo de facturation externe toutes les 4 heures (XML-RPC) et marque le cycle payé dès réception">
+                            <field name="subscription_remote_enabled"/>
+                        </setting>
+                        <setting id="subscription_remote_connexion_setting"
+                                 string="Connexion à l'Odoo distant"
+                                 help="URL, base de données, utilisateur API et clé API de l'instance qui gère les factures">
+                            <field name="subscription_remote_odoo_url"
+                                   invisible="not subscription_remote_enabled"/>
+                            <field name="subscription_remote_odoo_db"
+                                   invisible="not subscription_remote_enabled"/>
+                            <field name="subscription_remote_odoo_user"
+                                   invisible="not subscription_remote_enabled"/>
+                            <field name="subscription_remote_odoo_api_key"
+                                   password="True"
+                                   invisible="not subscription_remote_enabled"/>
+                        </setting>
+                        <setting id="subscription_remote_client_setting"
+                                 string="Client et facturation"
+                                 help="Nom du client affiché dans les alertes et ID du partenaire distant (secours si la référence de facture n'est pas trouvée)">
+                            <field name="subscription_client_name"/>
+                            <field name="subscription_remote_partner_id"
+                                   invisible="not subscription_remote_enabled"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

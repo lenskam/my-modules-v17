@@ -1,0 +1,59 @@
+/* Modale d'alerte de suspension sur la page de connexion */
+.sc-suspension-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sc-suspension-modal {
+    background: #ffffff;
+    position: relative;
+    border-radius: 8px;
+    max-width: 480px;
+    width: 90%;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+
+.sc-suspension-title {
+    color: #b91c1c;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.sc-suspension-message {
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.sc-suspension-help {
+    color: #6b7280;
+    font-size: 0.9em;
+    margin-bottom: 0;
+}
+
+.sc-suspension-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    color: #888;
+    cursor: pointer;
+    padding: 0;
+}
+
+.sc-suspension-close:hover {
+    color: #000;
+}

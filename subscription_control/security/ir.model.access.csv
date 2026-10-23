@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_subscription_control_user,subscription.control.user,model_subscription_control,base.group_user,1,0,0,0
+access_subscription_control_manager,subscription.control.manager,model_subscription_control,base.group_system,1,1,1,1
+access_subscription_billing_cycle_user,subscription.billing.cycle.user,model_subscription_billing_cycle,base.group_user,1,0,0,0
+access_subscription_billing_cycle_manager,subscription.billing.cycle.manager,model_subscription_billing_cycle,base.group_system,1,1,1,1
+access_subscription_reminder_log_user,subscription.reminder.log.user,model_subscription_reminder_log,base.group_user,1,0,0,0
+access_subscription_reminder_log_manager,subscription.reminder.log.manager,model_subscription_reminder_log,base.group_system,1,1,1,1
+access_subscription_postpone_wizard_manager,subscription.postpone.wizard.manager,model_subscription_postpone_wizard,base.group_system,1,1,1,1
+access_subscription_session_manager,subscription.session.manager,model_subscription_session,base.group_system,1,1,1,1
+access_subscription_alert_template_user,subscription.alert.template.user,model_subscription_alert_template,base.group_user,1,0,0,0
+access_subscription_alert_template_manager,subscription.alert.template.manager,model_subscription_alert_template,base.group_system,1,1,1,1
+access_subscription_mail_template_line_user,subscription.mail.template.line.user,model_subscription_mail_template_line,base.group_user,1,0,0,0
+access_subscription_mail_template_line_manager,subscription.mail.template.line.manager,model_subscription_mail_template_line,base.group_system,1,1,1,1

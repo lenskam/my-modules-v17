@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_subscription_mail_template_line" model="ir.actions.act_window">
+        <field name="name">Modèles d'email par intervalle</field>
+        <field name="res_model">subscription.mail.template.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Définissez un modèle d'email par intervalle de rappel
+            </p>
+            <p>
+                Pour un rappel J-N, le modèle dont l'intervalle est le plus proche
+                inférieur ou égal à N est utilisé (ex. interval 2 : J-2 et J-1).
+                Sans intervalle configuré, le modèle de rappel par défaut est utilisé.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_mail_template_line"
+              name="Modèles d'email par intervalle"
+              parent="menu_subscription_root"
+              action="action_subscription_mail_template_line"
+              sequence="40"
+              groups="base.group_system"/>
+
+    <record id="view_subscription_mail_template_line_tree" model="ir.ui.view">
+        <field name="name">subscription.mail.template.line.tree</field>
+        <field name="model">subscription.mail.template.line</field>
+        <field name="arch" type="xml">
+            <tree string="Modèles d'email par intervalle" editable="bottom">
+                <field name="trigger_days"/>
+                <field name="mail_template_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_subscription_mail_template_line_form" model="ir.ui.view">
+        <field name="name">subscription.mail.template.line.form</field>
+        <field name="model">subscription.mail.template.line</field>
+        <field name="arch" type="xml">
+            <form string="Modèle d'email par intervalle">
+                <sheet>
+                    <group>
+                        <field name="trigger_days"/>
+                        <field name="mail_template_id"/>
+                    </group>
+                    <div class="text-muted">
+                        Ce modèle est utilisé pour le rappel J-N dont N est le plus
+                        proche supérieur ou égal à cet intervalle (ex. interval 2 :
+                        J-2 et J-1). Les sujets et corps des messages restent
+                        personnalisables via <b>Modèles d'alerte</b>.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

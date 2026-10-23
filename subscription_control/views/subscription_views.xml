@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action (must be defined before menu items that reference it) -->
+    <record id="action_subscription_config" model="ir.actions.act_window">
+        <field name="name">Configuration abonnement</field>
+        <field name="res_model">subscription.control</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_billing_cycle" model="ir.actions.act_window">
+        <field name="name">Cycles de facturation</field>
+        <field name="res_model">subscription.billing.cycle</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu pour accéder à la configuration (admin uniquement) -->
+    <menuitem id="menu_subscription_root"
+              name="Abonnement"
+              parent="base.menu_administration"
+              sequence="10"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_subscription_config"
+              name="Configuration manuelle"
+              parent="menu_subscription_root"
+              action="action_subscription_config"
+              sequence="20"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_billing_cycle"
+              name="Cycles de facturation"
+              parent="menu_subscription_root"
+              action="action_billing_cycle"
+              sequence="10"
+              groups="base.group_system"/>
+
+        <!-- Formulaire de configuration (expiration manuelle) -->
+<record id="view_subscription_config_form" model="ir.ui.view">
+    <field name="name">subscription.control.form</field>
+    <field name="model">subscription.control</field>
+    <field name="arch" type="xml">
+        <form string="Configuration mannuelle de l'abonnement">
+            <header>
+                <button name="save_expiration_date" string="Enregistrer"
+                        type="object" class="btn-primary"/>
+                <button name="check_expiration" string="Vérifier maintenant"
+                        type="object" class="btn-secondary"/>
+                <button name="extend_subscription" string="Prolonger (+30j)"
+                        type="object" class="btn-warning"/>
+            </header>
+            <sheet>
+                <group string="Date d'expiration (manuelle)">
+                    <field name="expiration_date" widget="date" required="1"/>
+                    <field name="status" widget="badge"/>
+                    <field name="days_left" invisible="days_left &lt;= 0"/>
+                    <field name="is_expired"/>
+                </group>
+
+                <!-- Texte en pleine largeur -->
+                <div class="mt-4">
+                    <h3>Facturation automatique</h3>
+                    <p class="text-muted">
+                        Les cycles de facturation, rappels et suspensions sont
+                        gérés automatiquement selon les paramètres définis dans
+                        <b>Paramètres → Abonnement</b> (jour de facturation, délai
+                        de paiement, intervalles de rappel, destinataires). Les
+                        cycles sont consultables dans
+                        <b>Abonnement → Cycles de facturation</b>.
+                    </p>
+                </div>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+    <!-- Liste des cycles de facturation -->
+    <record id="view_billing_cycle_tree" model="ir.ui.view">
+        <field name="name">subscription.billing.cycle.tree</field>
+        <field name="model">subscription.billing.cycle</field>
+        <field name="arch" type="xml">
+            <tree string="Cycles de facturation"
+                  decoration-danger="state == 'suspended'"
+                  decoration-success="state == 'paid'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="billing_date"/>
+                <field name="suspension_date"/>
+                <field name="days_until_suspension"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'awaiting_payment'"
+                       decoration-danger="state == 'suspended'"
+                       decoration-success="state == 'paid'"
+                       decoration-muted="state == 'draft'"/>
+                <field name="paid_on" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Formulaire d'un cycle de facturation -->
+    <record id="view_billing_cycle_form" model="ir.ui.view">
+        <field name="name">subscription.billing.cycle.form</field>
+        <field name="model">subscription.billing.cycle</field>
+        <field name="arch" type="xml">
+            <form string="Cycle de facturation">
+                <header>
+                    <button name="action_mark_paid" string="Paiement reçu"
+                            type="object" class="btn-primary"
+                            invisible="state in ('paid', 'draft')"/>
+                    <button name="action_postpone_suspension" string="Repousser la suspension"
+                            type="object" class="btn-secondary"
+                            invisible="state in ('paid', 'draft')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="awaiting_payment,suspended,paid"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="billing_date"/>
+                            <field name="suspension_date"/>
+                        </group>
+                        <group>
+                            <field name="days_until_suspension"/>
+                            <field name="paid_on" invisible="state != 'paid'"/>
+                        </group>
+                    </group>
+                    <group string="Facturation (synchro API)" name="remote_invoice">
+                        <group>
+                            <field name="client_name"/>
+                            <field name="expected_invoice_ref"/>
+                            <field name="invoice_ref"/>
+                        </group>
+                        <group>
+                            <field name="invoice_amount"/>
+                            <field name="invoice_currency"/>
+                            <field name="remote_move_state"/>
+                        </group>
+                        <field name="remote_sync_on"/>
+                        <field name="remote_sync_error" invisible="not remote_sync_error"/>
+                    </group>
+                    <notebook>
+                        <page string="Rappels envoyés" name="reminders">
+                            <field name="reminder_log_ids">
+                                <tree readonly="1">
+                                    <field name="type"/>
+                                    <field name="days_before"/>
+                                    <field name="sent_on"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard de report de suspension -->
+    <record id="view_subscription_postpone_wizard" model="ir.ui.view">
+        <field name="name">subscription.postpone.wizard.form</field>
+        <field name="model">subscription.postpone.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Repousser la suspension">
+                <group>
+                    <field name="cycle_id"/>
+                    <field name="new_suspension_date"/>
+                </group>
+                <footer>
+                    <button name="action_postpone" string="Repousser"
+                            type="object" class="btn-primary"/>
+                    <button string="Annuler" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

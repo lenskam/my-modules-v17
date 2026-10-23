@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_alert_template" model="ir.actions.act_window">
+        <field name="name">Modèles d'alerte</field>
+        <field name="res_model">subscription.alert.template</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="view_alert_template_tree" model="ir.ui.view">
+        <field name="name">subscription.alert.template.tree</field>
+        <field name="model">subscription.alert.template</field>
+        <field name="arch" type="xml">
+            <tree string="Modèles d'alerte">
+                <field name="name"/>
+                <field name="type" widget="badge"
+                       decoration-info="type == 'reminder'"
+                       decoration-danger="type == 'suspension'"/>
+                <field name="trigger_days"/>
+                <field name="subject" optional="hide"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_alert_template_form" model="ir.ui.view">
+        <field name="name">subscription.alert.template.form</field>
+        <field name="model">subscription.alert.template</field>
+        <field name="arch" type="xml">
+            <form string="Modèle d'alerte">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="type"/>
+                            <field name="trigger_days" invisible="type == 'suspension'"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="subject"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Corps du message" name="body">
+                            <field name="body" nolabel="1" rows="10"/>
+                        </page>
+                        <page string="Placeholders disponibles" name="help">
+                            <div class="text-muted" style="padding: 8px;">
+                                <p>
+                                    Insérez un placeholder dans le texte avec la syntaxe :
+                                    signe <b>$</b> suivi du nom entre accolades ouvrante et fermante.
+                                </p>
+                                <p><b>client_name</b> — nom du client (cycle, sinon configuration)</p>
+                                <p><b>invoice_ref</b> — référence de la facture (synchro API)</p>
+                                <p><b>invoice_amount</b> — montant de la facture (synchro API)</p>
+                                <p><b>invoice_currency</b> — devise de la facture distante</p>
+                                <p><b>suspension_date</b> — date de suspension prévue</p>
+                                <p><b>days_before</b> — jours restants avant suspension</p>
+                                <p><b>db_name</b> — nom de la base Odoo</p>
+                                <p><b>cycle_name</b> — nom du cycle (ex. « Octobre 2026 »)</p>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
