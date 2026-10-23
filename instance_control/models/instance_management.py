@@ -367,6 +367,17 @@ class InstanceManagement(models.Model):
         self.ensure_one()
         return OdooXmlrpcClient(self.url, self.database, self.login, self.api_key)
 
+    def _ensure_central_managed(self, client):
+        """Passe l'instance distante en « gérée par le contrôleur central ».
+
+        Désactive le moteur de facturation local distant : sinon un cycle
+        local impayé maintient l'instance expirée (check_expiration() à
+        True) et annule tout « Rétablir » distant — les sessions des
+        utilisateurs distants sont alors tuées en boucle.
+        """
+        self.ensure_one()
+        client.set_billing_engine_enabled(False)
+
     def _fmt_date(self, date_val):
         return date_val.strftime('%d/%m/%Y') if date_val else ''
 
@@ -379,6 +390,7 @@ class InstanceManagement(models.Model):
         for instance in self:
             try:
                 client = instance._get_client()
+                instance._ensure_central_managed(client)
                 expiration = client.get_expiration_date()
                 instance.write({
                     'expiration_date': expiration,
@@ -442,6 +454,7 @@ class InstanceManagement(models.Model):
         self.ensure_one()
         try:
             client = self._get_client()
+            self._ensure_central_managed(client)
             if not expiration_date:
                 expiration_date = fields.Date.context_today(self) + timedelta(
                     days=self.get_extend_days())

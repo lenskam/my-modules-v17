@@ -51,6 +51,8 @@ class TestRemoteActions(TransactionCase):
             self.instance.action_restore()
         self.assertEqual(self.instance.state, 'active')
         client.restore_access.assert_called_once()
+        # Gérée par le contrôleur : le moteur local distant est désactivé
+        client.set_billing_engine_enabled.assert_called_once_with(False)
         client.set_expiration_date.assert_called_once_with(
             date.today() + timedelta(days=30))
 
@@ -67,6 +69,8 @@ class TestRemoteActions(TransactionCase):
         self.assertTrue(self.instance.last_check)
         self.assertFalse(self.instance.last_error)
         self.assertEqual(self.instance.state, 'active')
+        # La synchronisation prend en charge l'instance côté distant
+        client.set_billing_engine_enabled.assert_called_once_with(False)
 
     def test_sync_status_failure_records_error_silently(self):
         client = MagicMock()
@@ -141,6 +145,7 @@ class TestRemoteActions(TransactionCase):
             wizard.action_extend()
         self.assertEqual(self.instance.state, 'active')
         self.assertEqual(self.instance.expiration_date, target)
+        client.set_billing_engine_enabled.assert_called_once_with(False)
         client.set_expiration_date.assert_called_once_with(target)
         client.restore_access.assert_called_once()
         self.assertEqual(cycle.state, 'awaiting_payment')

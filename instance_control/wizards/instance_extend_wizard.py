@@ -41,6 +41,7 @@ class InstanceExtendWizard(models.TransientModel):
         instance = self.instance_id
         target = self._get_target_date()
         client = instance._get_client()
+        instance._ensure_central_managed(client)
         client.set_expiration_date(target)
         client.restore_access()
         instance.write({

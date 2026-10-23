@@ -55,3 +55,12 @@ class TestOdooXmlrpcClient(TransactionCase):
     def test_get_expiration_date_handles_false_response(self):
         client, _proxy = self._make_client(execute_result=False)
         self.assertIsNone(client.get_expiration_date())
+
+    def test_set_billing_engine_enabled_sends_bool(self):
+        client, proxy = self._make_client()
+        client.set_billing_engine_enabled(False)
+        args, _kwargs = proxy.execute_kw.call_args
+        self.assertEqual(
+            args[3:],
+            ('subscription.control', 'set_billing_engine_enabled',
+             [False], {}))

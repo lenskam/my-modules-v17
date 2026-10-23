@@ -105,6 +105,13 @@ class OdooXmlrpcClient:
         """Rétablit l'accès aux applications sur l'instance distante."""
         return self.call_control_method('restore_access')
 
+    def set_billing_engine_enabled(self, enabled):
+        """Active/désactive le moteur de facturation local de l'instance
+        distante : gérée par le contrôleur central, elle ne doit pas se
+        suspendre seule (cycles/rappels pilotés depuis le centre)."""
+        return self.call_control_method(
+            'set_billing_engine_enabled', bool(enabled))
+
     def extend_subscription(self, days):
         """Prolonge l'abonnement distant de X jours (méthode client)."""
         return self.call_control_method('extend_subscription', int(days))
