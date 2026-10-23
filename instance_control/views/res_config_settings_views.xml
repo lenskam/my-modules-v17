@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.instance_control</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Instances Odoo" string="Instances Odoo" name="instance_control" groups="base.group_system">
+                    <block title="Facturation et suspension (valeurs par défaut)" name="instance_billing">
+                        <setting id="instance_billing_day_setting"
+                                 string="Facturation mensuelle"
+                                 help="Jour du mois par défaut auquel les instances sont facturées (ex : 25). Peut être surchargé instance par instance">
+                            <field name="instance_billing_day"/>
+                        </setting>
+                        <setting id="instance_payment_delay_setting"
+                                 string="Délai de paiement"
+                                 help="Nombre de jours par défaut après la facturation avant suspension du service (ex : 15). Peut être surchargé instance par instance">
+                            <field name="instance_payment_delay_days"/>
+                        </setting>
+                        <setting id="instance_reminder_days_setting"
+                                 string="Intervalles de rappel"
+                                 help="Rappels envoyés N jours avant la date de suspension, séparés par des virgules (ex : 10,5,2,1). Peut être surchargé instance par instance">
+                            <field name="instance_reminder_days"/>
+                        </setting>
+                        <setting id="instance_suspension_alert_setting"
+                                 string="Alerte de suspension"
+                                 help="Valeur par défaut appliquée aux nouvelles instances (chaque instance est ajustable individuellement)">
+                            <field name="instance_suspension_alert"/>
+                        </setting>
+                    </block>
+                    <block title="Facturation centrale" name="instance_invoicing">
+                        <setting id="instance_product_setting"
+                                 string="Produit d'abonnement (défaut)"
+                                 help="Produit facturé par défaut sur les factures clients générées dans l'Odoo central. Un produit spécifique peut être défini sur chaque instance">
+                            <field name="instance_product_id"/>
+                        </setting>
+                        <setting id="instance_extend_days_setting"
+                                 string="Prolongation par défaut"
+                                 help="Durée (en jours) appliquée lors d'un rétablissement ou d'une prolongation (ex : 30)">
+                            <field name="instance_extend_days"/>
+                        </setting>
+                        <setting id="instance_registry_setting"
+                                 string="Registre des instances"
+                                 help="Instances Odoo gérées : connexion XML-RPC, client, montant mensuel, facturation, alertes, suspension et prolongation">
+                            <button name="%(instance_control.action_instance_management)d"
+                                    string="Instances gérées" type="action" class="oe_link" icon="fa-arrow-right"/>
+                        </setting>
+                        <setting id="instance_cycles_setting"
+                                 string="Cycles de facturation"
+                                 help="Cycles mensuels par instance : factures générées, rappels envoyés, suspensions et paiements">
+                            <button name="%(instance_control.action_instance_billing_cycle)d"
+                                    string="Cycles de facturation" type="action" class="oe_link" icon="fa-arrow-right"/>
+                        </setting>
+                    </block>
+                    <block title="Notifications et destinataires" name="instance_notifications">
+                        <setting id="instance_recipients_setting"
+                                 string="Destinataires et modèles d'email"
+                                 help="Les destinataires des rappels/alertes et les modèles d'email sont désormais configurés instance par instance, sur la fiche de chaque instance (onglet « Alertes &amp; Notifications »)">
+                            <button name="%(instance_control.action_instance_management)d"
+                                    string="Configurer par instance" type="action" class="oe_link" icon="fa-arrow-right"/>
+                        </setting>
+                        <setting id="instance_alert_templates_setting"
+                                 string="Modèles d'alerte (texte)"
+                                 help="Sujets et corps des rappels/alertes avec placeholders ${instance_name}, ${client_name}...">
+                            <button name="%(instance_control.action_instance_alert_template)d"
+                                    string="Modèles d'alerte" type="action" class="oe_link" icon="fa-arrow-right"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

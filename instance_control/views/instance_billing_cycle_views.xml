@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_instance_billing_cycle" model="ir.actions.act_window">
+        <field name="name">Cycles de facturation</field>
+        <field name="res_model">instance.billing.cycle</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="view_instance_billing_cycle_tree" model="ir.ui.view">
+        <field name="name">instance.billing.cycle.tree</field>
+        <field name="model">instance.billing.cycle</field>
+        <field name="arch" type="xml">
+            <tree string="Cycles de facturation"
+                  decoration-danger="state == 'suspended'"
+                  decoration-success="state == 'paid'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="instance_id"/>
+                <field name="billing_date"/>
+                <field name="suspension_date"/>
+                <field name="days_until_suspension"/>
+                <field name="invoice_id" optional="show"/>
+                <field name="invoice_payment_state" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'awaiting_payment'"
+                       decoration-danger="state == 'suspended'"
+                       decoration-success="state == 'paid'"
+                       decoration-muted="state == 'draft'"/>
+                <field name="paid_on" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_instance_billing_cycle_search" model="ir.ui.view">
+        <field name="name">instance.billing.cycle.search</field>
+        <field name="model">instance.billing.cycle</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher un cycle">
+                <field name="name"/>
+                <field name="instance_id"/>
+                <filter string="En attente de paiement" name="awaiting"
+                        domain="[('state', '=', 'awaiting_payment')]"/>
+                <filter string="Suspendus" name="suspended"
+                        domain="[('state', '=', 'suspended')]"/>
+                <filter string="Payés" name="paid"
+                        domain="[('state', '=', 'paid')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Instance" name="group_instance" context="{'group_by': 'instance_id'}"/>
+                    <filter string="Statut" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Mois de facturation" name="group_billing_date" context="{'group_by': 'billing_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_instance_billing_cycle_form" model="ir.ui.view">
+        <field name="name">instance.billing.cycle.form</field>
+        <field name="model">instance.billing.cycle</field>
+        <field name="arch" type="xml">
+            <form string="Cycle de facturation">
+                <header>
+                    <button name="action_mark_paid" string="Paiement reçu"
+                            type="object" class="btn-primary"
+                            invisible="state in ('paid', 'draft')"/>
+                    <button name="action_postpone_suspension" string="Repousser la suspension"
+                            type="object" class="btn-secondary"
+                            invisible="state in ('paid', 'draft')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="awaiting_payment,suspended,paid"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="instance_id"/>
+                            <field name="name"/>
+                            <field name="billing_date"/>
+                            <field name="suspension_date"/>
+                        </group>
+                        <group>
+                            <field name="days_until_suspension"/>
+                            <field name="remote_suspended" invisible="state != 'suspended'"/>
+                            <field name="paid_on" invisible="state != 'paid'"/>
+                        </group>
+                    </group>
+                    <group string="Facture (Odoo central)" name="invoice">
+                        <group>
+                            <field name="invoice_id"/>
+                            <field name="invoice_state"/>
+                            <field name="invoice_payment_state"/>
+                        </group>
+                        <group>
+                            <field name="invoice_partner_id"/>
+                            <field name="invoice_amount"/>
+                            <field name="invoice_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Rappels envoyés" name="reminders">
+                            <field name="reminder_log_ids" readonly="1">
+                                <tree>
+                                    <field name="type"/>
+                                    <field name="days_before"/>
+                                    <field name="sent_on"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard de report de suspension -->
+    <record id="view_instance_postpone_wizard" model="ir.ui.view">
+        <field name="name">instance.postpone.wizard.form</field>
+        <field name="model">instance.postpone.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Repousser la suspension">
+                <group>
+                    <field name="cycle_id"/>
+                    <field name="new_suspension_date"/>
+                </group>
+                <footer>
+                    <button name="action_postpone" string="Repousser"
+                            type="object" class="btn-primary"/>
+                    <button string="Annuler" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

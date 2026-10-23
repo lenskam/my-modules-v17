@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_instance_management_user,instance.management.user,model_instance_management,base.group_user,1,0,0,0
+access_instance_management_manager,instance.management.manager,model_instance_management,instance_control.group_instance_control_manager,1,1,1,1
+access_instance_billing_cycle_user,instance.billing.cycle.user,model_instance_billing_cycle,base.group_user,1,0,0,0
+access_instance_billing_cycle_manager,instance.billing.cycle.manager,model_instance_billing_cycle,instance_control.group_instance_control_manager,1,1,1,1
+access_instance_reminder_log_user,instance.reminder.log.user,model_instance_reminder_log,base.group_user,1,0,0,0
+access_instance_reminder_log_manager,instance.reminder.log.manager,model_instance_reminder_log,instance_control.group_instance_control_manager,1,1,1,1
+access_instance_mail_template_line_user,instance.mail.template.line.user,model_instance_mail_template_line,base.group_user,1,0,0,0
+access_instance_mail_template_line_manager,instance.mail.template.line.manager,model_instance_mail_template_line,instance_control.group_instance_control_manager,1,1,1,1
+access_instance_alert_template_user,instance.alert.template.user,model_instance_alert_template,base.group_user,1,0,0,0
+access_instance_alert_template_manager,instance.alert.template.manager,model_instance_alert_template,instance_control.group_instance_control_manager,1,1,1,1
+access_instance_extend_wizard_manager,instance.extend.wizard.manager,model_instance_extend_wizard,instance_control.group_instance_control_manager,1,1,1,1
+access_instance_postpone_wizard_manager,instance.postpone.wizard.manager,model_instance_postpone_wizard,instance_control.group_instance_control_manager,1,1,1,1

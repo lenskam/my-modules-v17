@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Modèle d'email de rappel (QWeb, syntaxe v17) -->
+        <record id="instance_mail_template_reminder" model="mail.template">
+            <field name="name">Instances : rappel de paiement</field>
+            <field name="model_id" ref="model_instance_billing_cycle"/>
+            <field name="subject">Rappel : abonnement Odoo [{{ object.instance_id.database }}] — suspension le {{ object.suspension_date }}</field>
+            <field name="body_html" type="html">
+<div style="margin:0px; padding:0px; font-family:Arial, sans-serif;">
+    <p>Bonjour <t t-out="object.instance_id.partner_id.name or object.instance_id.name"/>,</p>
+    <p>Instance : <strong><t t-out="object.instance_id.name"/></strong> (base : <t t-out="object.instance_id.database"/>)</p>
+    <p>L'abonnement Odoo de cette instance sera <strong>suspendu le <t t-out="object.suspension_date"/></strong>
+    (dans <t t-out="object.days_until_suspension"/> jour(s)) si le paiement n'est pas enregistré d'ici là.</p>
+    <p t-if="object.invoice_id">Facture : <strong><t t-out="object.invoice_id.name"/></strong>
+    — Montant : <t t-out="'%.2f' % object.invoice_id.amount_total"/> <t t-out="object.invoice_id.currency_id.name"/></p>
+    <p>Merci de régulariser votre situation pour éviter toute interruption de service.</p>
+    <p>Cordialement,<br/><span>Service Abonnement</span></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Modèle d'email d'alerte de suspension -->
+        <record id="instance_mail_template_suspension" model="mail.template">
+            <field name="name">Instances : suspension du service</field>
+            <field name="model_id" ref="model_instance_billing_cycle"/>
+            <field name="subject">Alerte : abonnement Odoo suspendu [{{ object.instance_id.database }}]</field>
+            <field name="body_html" type="html">
+<div style="margin:0px; padding:0px; font-family:Arial, sans-serif;">
+    <p>Bonjour <t t-out="object.instance_id.partner_id.name or object.instance_id.name"/>,</p>
+    <p>Instance : <strong><t t-out="object.instance_id.name"/></strong> (base : <t t-out="object.instance_id.database"/>)</p>
+    <p>L'abonnement Odoo de cette instance a été <strong>suspendu</strong> faute de paiement dans le délai imparti.</p>
+    <p t-if="object.invoice_id">Facture en attente : <strong><t t-out="object.invoice_id.name"/></strong>
+    — Montant : <t t-out="'%.2f' % object.invoice_id.amount_total"/> <t t-out="object.invoice_id.currency_id.name"/></p>
+    <p>L'accès au service est désormais bloqué. Veuillez contacter l'administrateur
+    pour rétablir l'accès après régularisation.</p>
+    <p>Cordialement,<br/><span>Service Abonnement</span></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

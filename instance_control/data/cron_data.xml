@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Cron quotidien : cycles de facturation, factures, rappels et suspensions -->
+        <record id="cron_billing_engine" model="ir.cron">
+            <field name="name">Instances : cycles de facturation et rappels</field>
+            <field name="model_id" ref="model_instance_billing_cycle"/>
+            <field name="code">model.run_billing_cycles()</field>
+            <field name="state">code</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron horaire : factures payées → cycles payés + rétablissement distant -->
+        <record id="cron_payment_sync" model="ir.cron">
+            <field name="name">Instances : synchro paiements des factures</field>
+            <field name="model_id" ref="model_instance_billing_cycle"/>
+            <field name="code">model._sync_invoice_payments()</field>
+            <field name="state">code</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron quotidien : push de l'état abonnement vers les Helpdesk -->
+        <record id="cron_helpdesk_signal" model="ir.cron">
+            <field name="name">Instances : push état abonnement Helpdesk</field>
+            <field name="model_id" ref="model_instance_management"/>
+            <field name="code">model.cron_push_helpdesk_signals()</field>
+            <field name="state">code</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron quotidien : miroir du statut des instances distantes -->
+        <record id="cron_status_sync" model="ir.cron">
+            <field name="name">Instances : synchro du statut distant</field>
+            <field name="model_id" ref="model_instance_management"/>
+            <field name="code">model._sync_all_status()</field>
+            <field name="state">code</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

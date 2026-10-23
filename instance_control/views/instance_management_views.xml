@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_instance_management" model="ir.actions.act_window">
+        <field name="name">Instances gérées</field>
+        <field name="res_model">instance.management</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Enregistrez votre première instance Odoo gérée
+            </p>
+            <p>
+                Chaque instance est pilotée à distance via le module
+                subscription_control installé sur celle-ci (XML-RPC).
+            </p>
+        </field>
+    </record>
+
+    <record id="view_instance_management_tree" model="ir.ui.view">
+        <field name="name">instance.management.tree</field>
+        <field name="model">instance.management</field>
+        <field name="arch" type="xml">
+            <tree string="Instances gérées"
+                  decoration-danger="state == 'unreachable' or state == 'suspended'"
+                  decoration-muted="active == False">
+                <field name="name"/>
+                <field name="url"/>
+                <field name="database"/>
+                <field name="partner_id" optional="show"/>
+                <field name="monthly_amount" optional="hide"/>
+                <field name="product_id" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-danger="state == 'unreachable'"
+                       decoration-warning="state == 'suspended'"/>
+                <field name="expiration_date" optional="show"/>
+                <field name="last_check" optional="hide"/>
+                <field name="last_error" optional="hide"/>
+                <field name="active" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_instance_management_search" model="ir.ui.view">
+        <field name="name">instance.management.search</field>
+        <field name="model">instance.management</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher une instance">
+                <field name="name"/>
+                <field name="database"/>
+                <field name="url"/>
+                <field name="partner_id"/>
+                <filter string="Actives" name="state_active"
+                        domain="[('state', '=', 'active')]"/>
+                <filter string="Suspendues" name="state_suspended"
+                        domain="[('state', '=', 'suspended')]"/>
+                <filter string="Injoignables" name="state_unreachable"
+                        domain="[('state', '=', 'unreachable')]"/>
+                <filter string="Archivées" name="archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="État" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Client" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_instance_management_form" model="ir.ui.view">
+        <field name="name">instance.management.form</field>
+        <field name="model">instance.management</field>
+        <field name="arch" type="xml">
+            <form string="Instance gérée">
+                <header>
+                    <button name="action_test_connection" string="Tester la connexion"
+                            type="object" class="btn-primary"/>
+                    <button name="action_sync_status" string="Synchroniser l'état"
+                            type="object" class="btn-secondary"/>
+                    <button name="action_suspend_now" string="Suspendre maintenant"
+                            type="object" class="btn-warning"
+                            confirm="Suspendre l'accès sur cette instance distante maintenant ?"
+                            invisible="state == 'suspended'"/>
+                    <button name="action_restore" string="Rétablir"
+                            type="object" class="btn-success"
+                            invisible="state != 'suspended'"/>
+                    <button name="action_push_helpdesk_signal" string="Push Helpdesk"
+                            type="object" class="btn-secondary"
+                            invisible="not helpdesk_push_enabled"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="active,suspended"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_cycles" type="object"
+                                class="oe_stat_button" icon="fa-calendar">
+                            <field name="cycle_count" widget="statinfo"
+                                   string="Cycles"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <group>
+                        <group string="Identification">
+                            <field name="name"/>
+                            <field name="active" invisible="1"/>
+                            <field name="partner_id"/>
+                            <field name="monthly_amount"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <group string="Connexion distante (XML-RPC)">
+                            <field name="url" placeholder="https://client1.exemple.com"/>
+                            <field name="database"/>
+                            <field name="login"/>
+                            <field name="api_key" password="True"/>
+                        </group>
+                    </group>
+                    <group string="État distant">
+                        <group>
+                            <field name="expiration_date"/>
+                            <field name="last_check"/>
+                        </group>
+                        <group>
+                            <field name="last_error" invisible="not last_error"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Facturation" name="billing_overrides">
+                            <group>
+                                <group string="Facturation spécifique (0/vide = valeur globale)">
+                                    <field name="billing_day"/>
+                                    <field name="payment_delay_days"/>
+                                    <field name="reminder_days"/>
+                                    <field name="product_id"/>
+                                </group>
+                                <group string="Valeurs globales actuelles">
+                                    <div class="text-muted" style="padding: 4px;">
+                                        Les champs laissés vides (ou à 0) utilisent
+                                        les valeurs par défaut définies dans
+                                        <b>Paramètres → Instances Odoo</b>.
+                                        Le montant mensuel facturé reste celui
+                                        défini dans « Identification ».
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Alertes &amp; Notifications" name="alerts">
+                            <group>
+                                <group string="Destinataires (propres à cette instance)">
+                                    <field name="suspension_alert_enabled"/>
+                                    <field name="recipient_partner_ids"
+                                           widget="many2many_tags"/>
+                                    <field name="recipient_emails"/>
+                                </group>
+                                <group string="Modèles d'email par défaut (repli)">
+                                    <field name="reminder_template_id"/>
+                                    <field name="suspension_template_id"/>
+                                </group>
+                            </group>
+                            <group string="Modèles d'email par intervalle de rappel">
+                                <field name="mail_template_line_ids" nolabel="1" colspan="2">
+                                    <tree editable="bottom">
+                                        <field name="trigger_days"/>
+                                        <field name="mail_template_id"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <div class="text-muted" style="margin-top: 8px;">
+                                Les rappels et alertes de cette instance sont envoyés
+                                à ces destinataires uniquement. Pour un rappel J-N, le
+                                modèle d'email dont l'intervalle est le plus proche
+                                inférieur ou égal à N est utilisé (ex. interval 2 :
+                                J-2 et J-1) ; sans modèle par intervalle, le modèle
+                                de rappel par défaut est utilisé. Les sujets/corps
+                                des messages restent personnalisables via
+                                <b>Modèles d'alerte</b>.
+                            </div>
+                        </page>
+                        <page string="Helpdesk (Odoo 11)" name="helpdesk">
+                            <group>
+                                <group string="Contrôle Helpdesk">
+                                    <field name="helpdesk_push_enabled"/>
+                                    <field name="helpdesk_signal_token"
+                                           password="True"
+                                           invisible="not helpdesk_push_enabled"/>
+                                </group>
+                                <group string="Dernier push">
+                                    <field name="last_helpdesk_push_on"
+                                           readonly="1"/>
+                                    <field name="last_helpdesk_push_state"
+                                           readonly="1"/>
+                                    <field name="last_helpdesk_push_error"
+                                           readonly="1"
+                                           invisible="not last_helpdesk_push_error"/>
+                                </group>
+                            </group>
+                            <div class="text-muted" style="margin-top: 8px;">
+                                Nécessite le module
+                                <b>helpdesk_subscription_control</b> sur
+                                l'instance distante : recopiez ici le token
+                                affiché dans ses paramètres. L'état
+                                d'abonnement (expiration, suspension,
+                                facturation) y est poussé à la suspension,
+                                au rétablissement et quotidiennement ; la
+                                création de tickets est bloquée sur le
+                                Helpdesk distant dès que l'abonnement est
+                                suspendu.
+                            </div>
+                        </page>
+                        <page string="Cycles de facturation" name="cycles">
+                            <field name="cycle_ids" readonly="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="billing_date"/>
+                                    <field name="suspension_date"/>
+                                    <field name="days_until_suspension"/>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state == 'awaiting_payment'"
+                                           decoration-danger="state == 'suspended'"
+                                           decoration-success="state == 'paid'"
+                                           decoration-muted="state == 'draft'"/>
+                                    <field name="paid_on" optional="hide"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+</odoo>

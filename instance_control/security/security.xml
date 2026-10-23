@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Catégorie de droits pour le contrôleur d'instances -->
+        <record id="module_category_instance_control" model="ir.module.category">
+            <field name="name">Contrôle des instances</field>
+            <field name="description">Gestion des instances Odoo gérées : facturation, suspension, prolongation.</field>
+            <field name="sequence">25</field>
+        </record>
+
+        <!-- Groupe Manager : gère les instances, cycles et templates -->
+        <record id="group_instance_control_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="module_category_instance_control"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Gère les instances Odoo distantes : registre, cycles de facturation, suspension et prolongation.</field>
+        </record>
+
+        <!-- Les administrateurs (Paramètres) gèrent les instances par défaut :
+             create / modifier / archiver disponibles sans ajout manuel au groupe -->
+        <record id="base.group_system" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('instance_control.group_instance_control_manager'))]"/>
+        </record>
+    </data>
+</odoo>
