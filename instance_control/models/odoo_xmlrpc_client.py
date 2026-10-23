@@ -85,10 +85,17 @@ class OdooXmlrpcClient:
         return self._to_date(self.call_control_method('get_expiration_date'))
 
     def set_expiration_date(self, date_obj):
-        """Définit la date d'expiration distante."""
+        """Définit la date d'expiration distante.
+
+        XML-RPC ne sait pas marshaler les objets datetime.date (côté
+        client comme côté serveur) : la date est envoyée en chaîne
+        'YYYY-MM-DD', acceptée par subscription.control distant.
+        """
         if isinstance(date_obj, datetime):
             date_obj = date_obj.date()
-        return self.call_control_method('set_expiration_date', date_obj)
+        if isinstance(date_obj, date):
+            date_obj = date_obj.isoformat()
+        return self.call_control_method('set_expiration_date', date_obj or False)
 
     def block_access_if_expired(self):
         """Bloque l'accès aux applications sur l'instance distante."""
